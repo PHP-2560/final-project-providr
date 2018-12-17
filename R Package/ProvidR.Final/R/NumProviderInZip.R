@@ -1,9 +1,11 @@
 #' NumProvidersInZip
+#' 
 #' This function takes a zip code and a provider taxonomy and outputs the number of providers in a zip codes
 #' @param "zipcode" and "taxonomy"
 #' @return the count of providers in a zipcode
 #' @examples 
 #' NumProvidersInZip("90210", "addiction")
+#' NumProvidersInZip("02906", "family practice")
 
 NumProviderInZip<-function(zipcode,taxonomy){
   #install/load required packages
@@ -65,17 +67,17 @@ NumProviderInZip<-function(zipcode,taxonomy){
   provider.data$statename<- noquote( str_extract(provider.data$Primary_Practice_Address,pattern="(?<=, )[A-Z]+(?=\\s)")) #state postal code (2 characters)
   provider.data<-mutate(provider.data, zipcode= as.character(zipcode))
 
-  zip_link<- zip_link %>%
+  zip_link<- zip_link %>% #gets zip_link ready for a join by selecting variables, renaming and then changing zipcode from a numeric to character variable.
     select(ZCTA5, STATE, COUNTY, GEOID) %>%
     rename(zipcode = ZCTA5) %>%
     mutate(zipcode = as.character(zipcode))
-  zip_link$zipcode = stri_pad_left(zip_link$zipcode, 5, "0")
+  zip_link$zipcode = stri_pad_left(zip_link$zipcode, 5, "0") #adds 0's to the front of the zipcodes until they have the length of 5
   
-  NPI_join<-inner_join(provider.data, zip_link, by="zipcode")
+  NPI_join<-inner_join(provider.data, zip_link, by="zipcode") #joins the provider.data to the zip_link.
   
-  NPI_join$STATE<-as.character(NPI_join$STATE)
+  NPI_join$STATE<-as.character(NPI_join$STATE) #turns the state variable into a character variable.
   
-  NPI_to_census<-inner_join(NPI_join, census, by=c("STATE", "COUNTY"))
-  return(NPI_to_census)
+  NPI_to_census<-inner_join(NPI_join, census, by=c("STATE", "COUNTY")) #inner join of the NPI_join to census data
+  return(nrow(NPI_to_census)) #returns the number of providers in a zipcode by taxonomy because each provider is on its own row.
 }
 

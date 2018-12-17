@@ -1,9 +1,11 @@
 #' ProviderInStateByCounty
+#' 
 #' This fuction creates a data frame of the providers in a state divided by county
 #' @param "state abbreviation", "provider taxonomy"
 #' @return a data frame
 #' @examples 
 #' ProviderInStateByCounty("CA", "cardiologist")
+#' PRoviderInStateByCounty("CT", "orthapedist")
 
 ProviderInStateByCounty<-function(state,taxonomy){
   #install/load required packages
@@ -32,11 +34,11 @@ ProviderInStateByCounty<-function(state,taxonomy){
     library(stringr)
   }
 
-  #pull data
+  #pulls data
   zips_used <- ZipsFromState(state)
-  load("ProvidR/Data/zcta_county_rel_10.Rda")
-  load("ProvidR/Data/co_est2017.Rda")
-  zip_link = zcta_county_rel_10
+  load("ProvidR.Final/Data/zcta_county_rel_10.Rda")
+  load("ProvidR.Final/Data/co_est2017.Rda")
+  zip_link = zcta_county_rel_10 #renaming the data sets
   census = co_est2017_alldata
    url1<- "https://npiregistry.cms.hhs.gov/registry/search-results-table?addressType=ANY&postal_code=" #setting the url to scrape from
   provider.data <- data.frame() #initializing an empty data frame
@@ -65,26 +67,26 @@ ProviderInStateByCounty<-function(state,taxonomy){
 
   provider.data <- filter(provider.data,state.name==state)
 
-  zip_link<- zip_link %>%
+  zip_link<- zip_link %>% #getting zip_link ready to be joined by selecting variables, renaming variables and making zipcode into a character variable
     select(ZCTA5, STATE, COUNTY, GEOID) %>%
     rename(zipcode = ZCTA5) %>%
     mutate(zipcode = as.character(zipcode))
-  zip_link$zipcode = stri_pad_left(zip_link$zipcode, 5, "0")
+  zip_link$zipcode = stri_pad_left(zip_link$zipcode, 5, "0") #adds 0's to the front of the zipcode to make it have a length of give
 
-  NPI_join<-inner_join(provider.data, zip_link, by="zipcode")
+  NPI_join<-inner_join(provider.data, zip_link, by="zipcode") #joins the provider.data to zip_link
 
-  NPI_join$STATE<-as.character(NPI_join$STATE)
+  NPI_join$STATE<-as.character(NPI_join$STATE) #makes the state variable a character variable
 
-  NPI_to_census<-inner_join(NPI_join, census, by=c("STATE", "COUNTY"))
-  NPI_to_census$state.name.long <- as.character(NPI_to_census$STNAME)
+  NPI_to_census<-inner_join(NPI_join, census, by=c("STATE", "COUNTY")) #inner join the previously made data set to census data
+  NPI_to_census$state.name.long <- as.character(NPI_to_census$STNAME) #makes the state name into a character variable
 
-  load("ProvidR/Data/state_abbrev.Rda")
+  load("ProvidR.Final/Data/state_abbrev.Rda") #loads the state abbreviation data set
 
-  state_abbrev$state.name.long <- as.character(state_abbrev$State)
+  state_abbrev$state.name.long <- as.character(state_abbrev$State) #makes the state name into a character variable
 
-  NPI_states <- left_join(NPI_to_census, state_abbrev, by=c("state.name.long"))
+  NPI_states <- left_join(NPI_to_census, state_abbrev, by=c("state.name.long")) #joins the NPI_to_census with the state_abbrev
 
-  return(NPI_states)
+  return(NPI_states) #returns the data frame
 
 }
 

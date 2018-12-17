@@ -11,14 +11,14 @@ SummaryByCounty<-function(state, taxonomy){
     install.packages("dplyr")
     library(dplyr)
   }
-  prov.dat <- ProviderInStateByCounty(state,taxonomy)
+  prov.dat <- ProviderInStateByCounty(state,taxonomy) #uses the ProviderInStateByCounty function to bring in a data set
   #process data
   rows <- prov.dat %>%
-    filter(Abbreviation==state) %>%
-    group_by(CTYNAME, STNAME, POPESTIMATE2010, state.name) %>%
-    count() %>%
-    select(CTYNAME, POPESTIMATE2010, STNAME, state.name, n) %>%
-    mutate(provider_density = n/POPESTIMATE2010*1000) %>%
-    arrange(n)
-  return(rows)
+    filter(Abbreviation==state) %>% #renames the variable
+    group_by(CTYNAME, STNAME, POPESTIMATE2010, state.name) %>% #grouping by the variables listed
+    count() %>% #creates a count
+    select(CTYNAME, POPESTIMATE2010, STNAME, state.name, n) %>% #selecting the columns to be displayed
+    mutate(provider_density = n/POPESTIMATE2010*1000) %>% #creating a new column that has the number of providers per 1,000 people
+    arrange(n) #arrange from least to greatest.
+  return(rows) #return dataset
 }

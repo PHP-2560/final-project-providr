@@ -1,12 +1,14 @@
 #' LowProviderNumberZip
+#' 
 #' This function outputs a visualization of the zip codes with the lowest number of providers in a state (with at least one provider minimum in the zip code)
-#' @param The data frame created by the function GetDataFromState
+#' @param the data frame created by the function GetDataFromState
 #' @return a bar graph of the zip codes with the lowest number of providers in a state.
 #' @examples 
 #' Data<-GetDataFromState("LA", "primary care")
 #' LowProviderNumberZip(Data)
 
 LowProviderNumberZip<-function(data){
+  #load required packages
   if(!require(dplyr)){
     install.packages("dplyr")
     library(dplyr)
@@ -16,14 +18,14 @@ LowProviderNumberZip<-function(data){
     install.packages("ggplot2")
     library(ggplot2)
   }
-  counts<-CountByZip(data)
+  counts<-CountByZip(data) #run CountByZip over the data grame 
   number_practices<-counts%>%select(n) %>% #selecting and grouping by frequency
-    group_by(n) %>%
-    count() %>%
+    group_by(n) %>% #grouping by the number of practitioners in a zipcode
+    count() %>% #counting
     arrange(n) #arranging by frequency
   number_practices.low <- head(number_practices) #getting the first rows of the number_pratices and desingnating them as low numbers of practices
-  plot<-ggplot(number_practices.low, aes(x=n, y=nn))+
-    geom_bar(stat="identity", fill="blue", position=position_dodge()) + labs(x = "Number of providers", y = "Number of zip codes")+
+  plot<-ggplot(number_practices.low, aes(x=n, y=nn))+ #setting up the ggplot environment
+    geom_bar(stat="identity", fill="blue", position=position_dodge()) + labs(x = "Number of providers", y = "Number of zip codes")+ #creating bar graph and labels
     theme_minimal()
-  print(plot + ggtitle("Zip codes with low numbers of providers"))
+  print(plot + ggtitle("Zip codes with low numbers of providers")) #print plot with title
 }

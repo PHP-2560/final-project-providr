@@ -4,7 +4,8 @@
 #' @param "state abbreviation", "taxonomy"
 #' @return a data frame
 #' @examples 
-#' GetDataFromState("RI", "Primary Care")
+#' GetDataFromState("RI", "primary care")
+#' GetDataFromState("CT", "dermatologist")
 
 GetDataFromState<-function(state, taxonomy) {
   #load neccesary packages
