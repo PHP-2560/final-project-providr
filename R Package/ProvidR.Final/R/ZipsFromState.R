@@ -18,10 +18,10 @@ ZipsFromState<-function(state_name){
     library(dplyr)
   }
   #process data
-  data(zipcode)
+  data(zipcode) #creates data frame from zipcode package
   zip_holder<-zipcode%>%
-    filter(state==state_name)%>%
-    select(zip)
-  zip_state<-zip_holder[,1]
+    filter(state==state_name)%>% #remanes the state_name variable
+    select(zip) #selects the zipcodes
+  zip_state<-zip_holder[,1] #grabe the first row 
   return(zip_state)
 }
