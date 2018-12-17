@@ -1,7 +1,9 @@
-#'NPIcode_taxonomy
+#'Base function
 #'This is the base function that created many of our further functions. 
+#'You will not use this function directly, but other functions in this package use this code.
 
 NPIcode_taxonomy<-function(zipcode,taxonomy){
+  #loading packages needed
   if(!require(dplyr)){
     install.packages("dplyr")
     library(dplyr)
@@ -25,10 +27,10 @@ NPIcode_taxonomy<-function(zipcode,taxonomy){
   if(!require(stringi)){
     install.packages("stringri")
     library(stringi)
-  }
-load("ProvidR/Data/zcta_county_rel_10.Rda")
-load("ProvidR/Data/co_est2017.Rda")
-zip_link = zcta_county_rel_10
+  } #loading neccesary data file.s
+load("ProvidR.Final/Data/zcta_county_rel_10.Rda")
+load("ProvidR.Final/Data/co_est2017.Rda")
+zip_link = zcta_county_rel_10 #renaming data sets for use later
 census = co_est2017_alldata
   url1<- "https://npiregistry.cms.hhs.gov/registry/search-results-table?addressType=ANY&postal_code=" #setting the url to scrape from
   provider.data <- data.frame() #initializing an empty data frame
